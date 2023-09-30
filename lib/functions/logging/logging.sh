@@ -1,53 +1,63 @@
-#!/usr/bin/env bash
-#
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (c) 2013-2023 Igor Pecovnik, igor@armbian.com
-#
-# This file is a part of the Armbian Build Framework
-# https://github.com/armbian/build/
+# shellcheck shell=sh # POSIX
 
 # This is called both early in compile.sh, but also after processing cmdline params in the cli entrypoint.sh
-function logging_init() {
-	# defaults.
+logging_init() {
+	# defaults
 	# if stdout is a terminal, then default SHOW_LOG to yes
-	[[ -t 1 ]] && declare -g SHOW_LOG="${SHOW_LOG:-"yes"}"
+	[ ! -t 1 ] || SHOW_LOG="${SHOW_LOG:-"yes"}"
 
 	# if DEBUG=yes, is set then default both log & debug to yes
-	if [[ "${DEBUG}" == "yes" ]]; then
-		declare -g SHOW_LOG="${SHOW_LOG:-"yes"}"
-		declare -g SHOW_DEBUG="${SHOW_DEBUG:-"yes"}"
-	fi
+	[ "$DEBUG" != "yes" ] || {
+		SHOW_LOG="${SHOW_LOG:-"yes"}"
+		SHOW_DEBUG="${SHOW_DEBUG:-"yes"}"
+	}
 
-	# globals
-	declare -g padding="" left_marker="[" right_marker="]"
-	declare -g normal_color="\x1B[0m" gray_color="\e[1;30m" # "bright black", which is grey
-	declare -g bright_red_color="\e[1;31m" red_color="\e[0;31m"
-	declare -g bright_blue_color="\e[1;34m" blue_color="\e[0;34m"
-	declare -g bright_magenta_color="\e[1;35m" magenta_color="\e[0;35m"
-	declare -g bright_yellow_color="\e[1;33m" yellow_color="\e[0;33m"
-	declare -g ansi_reset_color="\e[0m"
-	declare -g -i logging_section_counter=0 # -i: integer
-	declare -g tool_color="${normal_color}" # default to normal color.
+	# GLOBALS
+	# shellcheck disable=SC2034 # It doesn't matter that these are not used
+	{
+		padding=""
+		left_marker="["
+		right_marker="]"
+
+		normal_color="\x1B[0m"
+		gray_color="\e[1;30m" # "bright black", which is grey
+
+		bright_red_color="\e[1;31m"
+		red_color="\e[0;31m"
+
+		bright_blue_color="\e[1;34m"
+		blue_color="\e[0;34m"
+
+		bright_magenta_color="\e[1;35m"
+		magenta_color="\e[0;35m"
+
+		bright_yellow_color="\e[1;33m"
+		yellow_color="\e[0;33m"
+
+		ansi_reset_color="\e[0m"
+
+		logging_section_counter=0
+
+		tool_color="$normal_color" # default to normal color.
+	}
 
 	# A few terminals, like iTerm2, are known to correctly display "bright black" as gray. Use that if available.
-	if [[ "${ITERM_SHELL_INTEGRATION_INSTALLED:-"No"}" == "Yes" ]]; then
-		declare -g tool_color="${gray_color}"
-	fi
+	[ "$ITERM_SHELL_INTEGRATION_INSTALLED" != "Yes" ] || tool_color="$gray_color"
 
-	if [[ "${CI}" == "true" ]]; then # ... but that is too dark for Github Actions
-		declare -g tool_color="${normal_color}"
-		declare -g SHOW_LOG="${SHOW_LOG:-"yes"}" # if in CI/GHA, default to showing log
-	fi
+	[ "$CI" != "true" ] || {
+		tool_color="$normal_color"
+		SHOW_LOG="${SHOW_LOG:-"yes"}" # if in CI/GHA, default to showing log
+	}
 
-	if [[ "${ARMBIAN_RUNNING_IN_CONTAINER}" == "yes" ]]; then # if in container, add a cyan "whale emoji" to the left marker wrapped in dark gray brackets
-		local container_emoji="🐳"                                #  🐳 or 🐋
-		declare -g left_marker="${gray_color}[${container_emoji}|${normal_color}"
-	elif [[ "$(uname -s)" == "Darwin" ]]; then # if on Mac, add a an apple emoji to the left marker wrapped in dark gray brackets
-		local mac_emoji="🍏"                       # 🍏 or 🍎
-		declare -g left_marker="${gray_color}[${mac_emoji}|${normal_color}"
+	# if in container, add a cyan "whale emoji" to the left marker wrapped in dark gray brackets
+	if [ "$ARMBIAN_RUNNING_IN_CONTAINER" = "yes" ]; then
+		local container_emoji="🐳" #  🐳 or 🐋
+		left_marker="$gray_color[$container_emoji|$normal_color"
+	# if on Mac, add a an apple emoji to the left marker wrapped in dark gray brackets
+	elif [ "$(uname -s)" = "Darwin" ]; then
+		local mac_emoji="🍏" # 🍏 or 🍎
+		left_marker="$gray_color[$mac_emoji|$normal_color"
 	else
-		declare wsl2_type
 		wsl2_detect_type
 		if [[ "${wsl2_type}" != "none" ]]; then
 			local windows_emoji="💲" # 💰 or 💲 for M$ -- get it?
@@ -56,7 +66,7 @@ function logging_init() {
 	fi
 }
 
-function logging_error_show_log() {
+logging_error_show_log() {
 	[[ "${SHOW_LOG}" == "yes" ]] && return 0 # Do nothing if we're already showing the log on stderr.
 	# Do NOT unset CURRENT_LOGFILE here... it's used by traps.
 
@@ -85,7 +95,7 @@ function logging_error_show_log() {
 # usage example:
 # declare -a verbose_params=() && if_user_on_terminal_and_not_logging_add verbose_params "--verbose" "--progress"
 # echo "here is the verbose params: ${verbose_params[*]}"
-function if_user_on_terminal_and_not_logging_add() {
+if_user_on_terminal_and_not_logging_add() {
 	# Is user on a terminal? if not, do nothing.
 	if [[ ! -t 1 ]]; then
 		return 0
@@ -101,7 +111,7 @@ function if_user_on_terminal_and_not_logging_add() {
 	return 0
 }
 
-function if_user_not_on_terminal_or_is_logging_add() {
+if_user_not_on_terminal_or_is_logging_add() {
 	# Is user on a terminal? if yes, do nothing.
 	if [[ -t 1 ]]; then
 		return 0
@@ -117,19 +127,19 @@ function if_user_not_on_terminal_or_is_logging_add() {
 }
 
 # This takes LOG_ASSET, which can and should include an extension.
-function do_with_log_asset() {
+do_with_log_asset() {
 	# @TODO: check that CURRENT_LOGGING_COUNTER is set, otherwise crazy?
 	local ASSET_LOGFILE="${CURRENT_LOGGING_DIR}/${CURRENT_LOGGING_COUNTER}.${LOG_ASSET}"
 	display_alert "Logging to asset" "${CURRENT_LOGGING_COUNTER}.${LOG_ASSET}" "debug"
 	"$@" >> "${ASSET_LOGFILE}"
 }
 
-function print_current_asset_log_base_file() {
+print_current_asset_log_base_file() {
 	declare ASSET_LOGFILE_BASE="${CURRENT_LOGGING_DIR}/${CURRENT_LOGGING_COUNTER}."
 	echo -n "${ASSET_LOGFILE_BASE}"
 }
 
-function check_and_close_fd_13() {
+check_and_close_fd_13() {
 	wait_for_disk_sync "before closing fd 13" # let the disk catch up
 	if [[ -e /proc/self/fd/13 ]]; then
 		display_alert "Closing fd 13" "log still open" "cleanup" # no reason to be alarmed
@@ -170,7 +180,7 @@ function check_and_close_fd_13() {
 	fi
 }
 
-function discard_logs_tmp_dir() {
+discard_logs_tmp_dir() {
 	# if we're in a logging section and logging to file when an error happened, and we're now cleaning up,
 	# the "tee" process created for fd 13 in do_with_logging() is still running, and holding a reference to the log file,
 	# which resides precisely in LOGDIR. So we need to kill it.

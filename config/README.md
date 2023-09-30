@@ -1,0 +1,1 @@
+Dedicated to various configuration files from boards to kernel

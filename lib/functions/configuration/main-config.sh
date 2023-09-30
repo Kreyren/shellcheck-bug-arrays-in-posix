@@ -38,19 +38,19 @@ function do_main_configuration() {
 		exit_with_error "REVISION must begin with a digit, got '${REVISION}'"
 	fi
 
-	[[ -z $VENDOR ]] && VENDOR="Armbian"
-	[[ -z $VENDORURL ]] && VENDORURL="https://www.armbian.com"
-	[[ -z $VENDORSUPPORT ]] && VENDORSUPPORT="https://forum.armbian.com"
-	[[ -z $VENDORPRIVACY ]] && VENDORPRIVACY="https://www.armbian.com"
-	[[ -z $VENDORBUGS ]] && VENDORBUGS="https://www.armbian.com/bugs"
-	[[ -z $VENDORLOGO ]] && VENDORLOGO="armbian-logo"
-	[[ -z $ROOTPWD ]] && ROOTPWD="1234"                                  # Must be changed @first login
-	[[ -z $MAINTAINER ]] && MAINTAINER="Igor Pecovnik"                   # deb signature
-	[[ -z $MAINTAINERMAIL ]] && MAINTAINERMAIL="igor.pecovnik@****l.com" # deb signature
+	[ -n "$VENDOR" ] || VENDOR="AerithForge"
+	[ -n "$VENDORURL" ] || VENDORURL="https://www.domain.tld"
+	[ -n "$VENDORSUPPORT" ] || VENDORSUPPORT="https://forum.domain.tld"
+	[ -n "$VENDORPRIVACY" ] || VENDORPRIVACY="https://www.domain.tld"
+	[ -n "$VENDORBUGS" ] || VENDORBUGS="https://www.domain.tld/bugs"
+	[ -n "$VENDORLOGO" ] || VENDORLOGO="aerithforge-logo"
+	[ -n "$ROOTPWD" ] || ROOTPWD="1234"                                  # Must be changed @first login
+	[ -n "$MAINTAINER" ] || MAINTAINER="Jacob Hrbek"                     # deb signature
+	[ -n "$MAINTAINERMAIL" ] || MAINTAINERMAIL="kreyren@****n.me" # deb signature
 	DEST_LANG="${DEST_LANG:-"en_US.UTF-8"}"                              # en_US.UTF-8 is default locale for target
 	display_alert "DEST_LANG..." "DEST_LANG: ${DEST_LANG}" "debug"
 
-	declare -g SKIP_EXTERNAL_TOOLCHAINS="${SKIP_EXTERNAL_TOOLCHAINS:-yes}" # don't use any external toolchains, by default.
+	[ -n "$SKIP_EXTERNAL_TOOLCHAINS" ] || SKIP_EXTERNAL_TOOLCHAINS="yes" # don't use any external toolchains, by default.
 
 	# Timezone
 	if [[ -f /etc/timezone ]]; then # Timezone for target is taken from host, if it exists.
@@ -231,7 +231,7 @@ function do_main_configuration() {
 	# Let's set default data if not defined in board configuration above
 	[[ -z $OFFSET ]] && OFFSET=4 # offset to 1st partition (we use 4MiB boundaries by default)
 	[[ -z $ARCH ]] && ARCH=armhf # makes little sense to default to anything...
-	ATF_COMPILE=yes
+	[ -n "$ATF_COMPILE" ] || ATF_COMPILE=no
 	[[ -z $WIREGUARD ]] && WIREGUARD="yes"
 	[[ -z $EXTRAWIFI ]] && EXTRAWIFI="yes"
 	[[ -z $SKIP_BOOTSPLASH ]] && SKIP_BOOTSPLASH="no"

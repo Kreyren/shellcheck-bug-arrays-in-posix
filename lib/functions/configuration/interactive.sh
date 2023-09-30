@@ -90,7 +90,7 @@ function get_list_of_all_buildable_boards() {
 				ref_dict_all_board_types["${board_name}"]="${board_type}"
 				ref_dict_all_board_source_files["${board_name}"]="${ref_dict_all_board_source_files["${board_name}"]} ${full_board_file}" # accumulate, will have extra space
 				if [[ ${prepare_options} -gt 0 ]]; then
-					board_desc="$(head -1 "${full_board_file}" | cut -d'#' -f2)"
+					board_desc="$(grep "BOARD_DESCRIPTION" "$full_board_file" | sed -E "s#(BOARD_DESCRIPTION)(=)(\")(.*)(\")#\4#")"
 					ref_dict_all_board_descriptions["${board_name}"]="${board_desc}"
 				fi
 			done

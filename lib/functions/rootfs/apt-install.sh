@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-#
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (c) 2013-2023 Igor Pecovnik, igor@armbian.com
-#
-# This file is a part of the Armbian Build Framework
-# https://github.com/armbian/build/
+# shellcheck shell=sh # POSIX
 
-function apt_purge_unneeded_packages_and_clean_apt_caches() {
+apt_purge_unneeded_packages_and_clean_apt_caches() {
 	# remove packages that are no longer needed. rootfs cache + uninstall might have leftovers.
 	display_alert "No longer needed packages" "purge" "info"
 	chroot_sdcard_apt_get autoremove
@@ -45,7 +39,7 @@ function apt_purge_unneeded_packages_and_clean_apt_caches() {
 	wait_for_disk_sync "after cleaning ${SDCARD}${dir_var_lib_apt_lists}"
 }
 
-function apt_lists_copy_from_host_to_image_and_update() {
+apt_lists_copy_from_host_to_image_and_update() {
 	display_alert "Copying host-side apt list cache into image" "apt-get update and clean image-side" "info"
 
 	declare -i local_apt_cache_lists_count
@@ -73,7 +67,7 @@ function apt_lists_copy_from_host_to_image_and_update() {
 
 # this is called:
 # 1) install_deb_chroot "${DEB_STORAGE}/somethingsomething.deb" (yes, it's always ${DEB_STORAGE})
-function install_deb_chroot() {
+install_deb_chroot() {
 	local package="$1"
 	local variant="$2"
 	local transfer="$3"

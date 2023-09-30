@@ -7,6 +7,7 @@
 	"settings": {
 		"editor.renderWhitespace": "all",
 		"editor.tabSize": 2,
+		"editor.guides.bracketPairs": true,
 
 		"files.associations": {
 			"*.inc": "shellscript",
@@ -53,6 +54,10 @@
 			"--external-sources"
 		],
 
+		// AI
+		"genieai.telemetry.disable": true,
+		"genieai.openai.model": "gpt-3.5-turbo",
+
 		// For working with Nix files
 		"nix.enableLanguageServer": true,
 		"nix.serverPath": "nil",
@@ -76,7 +81,48 @@
 			"aaron-bond.better-comments",
 			"timonwong.shellcheck",
 			"oderwat.indent-rainbow",
-			"eamodio.gitlens"
+			"eamodio.gitlens",
+			"genieai.chatgpt-vscode",
+			"gruntfuggly.todo-tree",
+			"mhutchie.git-graph"
 		]
-	}
+	},
+
+	"files.exclude": {
+		"**/.git": false,
+		"**/.hg": false,
+		"**/.svn": false,
+		"**/CVS": false,
+	},
+	"search.exclude": {
+		"**/*.bin": true,
+		"**/*.blob": true,
+		"**/*.gpg": true,
+		"**/*.img": true,
+		"**/*.img.old": true,
+		"**/*.patch": true,
+		"**/*.so": true,
+		"**/cache": true,
+		"**/output": true,
+		"**/packages/blobs/bt": true,
+		"**/packages/blobs/jetson/tegra21x_xusb_firmware": true,
+		"**/packages/blobs/mt7623n/wireless/stp_uart_launcher": true,
+		"**/packages/blobs/mt7623n/wireless/wmt_loader": true,
+		"**/packages/blobs/mt7623n/wireless/wmt_loopback": true,
+		"**/packages/blobs/station/firefly_fan_control": true,
+		"**/packages/blobs/station/firmware/rtlbt": true,
+		"**/packages/blobs/sunxi/h616/inithdmiaudio": true,
+		"**/packages/blobs/usb-redirector/usb-redirector-old.tgz": true,
+		"**/packages/bsp/aml-s9xx-box/boot/aml_autoscript": true,
+		"**/packages/bsp/aml-s9xx-box/boot/s905_autoscript": true,
+		"**/packages/bsp/aml-s9xx-box/boot/u-boot-s905": true,
+		"**/packages/bsp/aml-s9xx-box/boot/u-boot-s905x-s912": true,
+		"**/packages/bsp/aml-s9xx-box/boot/u-boot-s905x2-s922": true,
+		"**/packages/bsp/cubox/brcm_patchram_plus": true,
+		"**/packages/bsp/olinuxino/usr/sbin/devmem": true,
+		"**/packages/bsp/rk3328/z28pro/8822b_hciattach": true,
+		"**/packages/bsp/rk3399/hciattach_opi": true,
+		"**/packages/pack-uboot/sun50iw9/tools": true,
+		"**/rtk_hciattach": true
+	},
 }

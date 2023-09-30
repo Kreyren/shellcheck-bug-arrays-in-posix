@@ -51,29 +51,6 @@ function improved_git_fetch() {
 	improved_git fetch "${verbose_params[@]}" --recurse-submodules=no "$@"
 }
 
-# workaround new limitations imposed by CVE-2022-24765 fix in git, otherwise  "fatal: unsafe repository"
-function git_ensure_safe_directory() {
-	local git_dir="$1"
-
-	command -v git 1>/dev/null || {
-		display_alert "git not installed" "a true wonder how you got this far without git - it will be installed for you" "warn"
-		return 1
-	}
-
-	if [[ "$(git config --get safe.directory | grep -o "$git_dir")" != "$git_dir" || "$(git config --get safe.directory | grep -o "$git_dir")" != "$git_dir" ]]; then
-		printf "%s\n" \
-			"To avoid git-induced failures with safe directories caused by CVE-2022-24765 you need to manually add directory '$git_dir' as 'safe.directory' in your git configuration" \
-			"To do that locally invoke: git config --add safe.directory \"$git_dir\"" \
-			"To do that globally invoke: git config --global --add safe.directory \"$git_dir\""
-		exit_with_error "Exitting for safety due to misconfigured safe.directory in git.."
-
-	else
-		display_alert "The directory '$git_dir' is set as a safe directory in git"
-		return 0
-	fi
-}
-
-
 # fetch_from_repo <url> <directory> <ref> <ref_subdir>
 # <url>: remote repository URL
 # <directory>: local directory; subdir for branch/tag will be created
